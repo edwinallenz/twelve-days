@@ -1,4 +1,6 @@
 defmodule TwelveDays do
+  @moduledoc "Build Twelve Days song"
+
   @table %{
     1 => [verse: "Partridge in a Pear Tree", cardinal: "a", ordinal: "first"],
     2 => [verse: "Turtle Doves", cardinal: "two", ordinal: "second"],
@@ -21,12 +23,15 @@ defmodule TwelveDays do
   @spec verse(number :: integer) :: String.t()
   def verse(number) do
     starting_verse = number
-    opening_phrase = "On the #{@table[number][:ordinal]} day of Christmas my true love gave to me:"
 
-    Enum.reduce(number..1, opening_phrase, fn(number, acc) ->  
+    opening_phrase =
+      "On the #{@table[number][:ordinal]} day of Christmas my true love gave to me:"
+
+    Enum.reduce(number..1, opening_phrase, fn number, acc ->
       [verse: verse, cardinal: cardinal, ordinal: _ordinal] = @table[number]
 
-      acc <> space_or_and(starting_verse, number) <> "#{cardinal} #{verse}" <> period_or_comma(number)
+      acc <>
+        space_or_and(starting_verse, number) <> "#{cardinal} #{verse}" <> period_or_comma(number)
     end)
   end
 
@@ -51,19 +56,15 @@ defmodule TwelveDays do
   """
   @spec verses(starting_verse :: integer, ending_verse :: integer) :: String.t()
   def verses(starting_verse, ending_verse) do
-    Enum.map(starting_verse..ending_verse, fn(number) ->  
+    Enum.map(starting_verse..ending_verse, fn number ->
       add_breakline(starting_verse, number) <> verse(number)
     end)
     |> Enum.join("")
   end
 
-
   @spec add_breakline(starting_verse :: integer, number :: integer) :: String.t()
   def add_breakline(starting_verse, number) do
-    cond do
-      number == starting_verse -> ""
-      true -> "\n"
-    end
+    if number == starting_verse, do: "", else: "\n"
   end
 
   @doc """
