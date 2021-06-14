@@ -1,42 +1,55 @@
 defmodule TwelveDays.UserEndpoint do
   @moduledoc """
-   """
+    Returns a verse, range of verses or all the complete Twelve Days song
+  """
   use Plug.Router
-  # This module is a Plug, that also implements it's own plug pipeline, below:
 
-    # Using Plug.Logger for logging request information
-    plug(Plug.Logger)
+  # Using Plug.Logger for logging request information
+  plug(Plug.Logger)
 
-    # responsible for matching routes
-    plug(:match)
+  # responsible for matching routes
+  plug(:match)
 
-    # Using Poison for JSON decoding
-    # Note, order of plugs is important, by placing this _after_ the 'match' plug,
-    # we will only parse the request AFTER there is a route match.
-    plug(Plug.Parsers,
-      parsers: [:json],
-      pass: ["application/json"],
-      json_decoder: Poison
-    )
+  # Using Poison for JSON decoding
+  plug(Plug.Parsers,
+    parsers: [:json],
+    pass: ["application/json"],
+    json_decoder: Poison
+  )
 
-    # responsible for dispatching responses
-    plug(:dispatch)
+  plug(:dispatch)
 
-    # A simple route to test that the server is up
-    # Note, all routes must return a connection as per the Plug spec.
-    # Get all users
-    get "/users" do
-      conn
-      |> IO.inspect()
-      |> put_resp_content_type("application/json")
-      |> IO.inspect()
-      |> send_resp(200, Poison.encode!(%{response: "This a test message !"}))
+  #Routes
+  get "/song" do
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, build_reponse(conn.query_params))
+  end
+
+  def build_reponse(query_params) do
+    case query_params do
+      %{"verse" => value} ->
+        int_value = value |> String.to_integer()
+        %{response: TwelveDays.verse(int_value)}
+
+      %{"verses" => values} ->
+        [initial_verse, final_verse] = values |> String.split(",") |> Enum.map(&String.to_integer/1)
+        %{response: TwelveDays.verses(initial_verse, final_verse)}
+
+      %{"sing" => _values} ->
+        %{response: TwelveDays.sing()}
+
+      %{} ->
+        %{response: TwelveDays.sing()}
+
+      true ->
+        %{response: TwelveDays.sing()}
+
     end
+    |> Poison.encode!()
+  end
 
-
-    # A catchall route, 'match' will match no matter the request method,
-    # so a response is always returned, even if there is no route to match.
-    match _ do
-      send_resp(conn, 404, "Unknown request :( !")
-    end
+  match _ do
+    send_resp(conn, 404, "Unknown request :( !")
+  end
 end

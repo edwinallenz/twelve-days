@@ -25,7 +25,7 @@ defmodule TwelveDays.MixProject do
       extra_applications: [:logger, :plug_cowboy],
       mod: {TwelveDays.Application, []}
     ]
-    end
+  end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
@@ -47,7 +47,7 @@ defmodule TwelveDays.MixProject do
       test_ci: [
         "test",
         "coveralls"
-        ],
+      ],
       code_review: [
         "dialyzer",
         "credo --strict"

@@ -6,12 +6,13 @@ defmodule TwelveDays.Application do
   @impl true
   def start(_type, _args) do
     import Supervisor.Spec
+
     children = [
       Plug.Cowboy.child_spec(
         scheme: :http,
         plug: TwelveDays.UserEndpoint,
         options: Application.get_env(:twelve_days, :endPoint)[:port]
-        ),
+      )
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
