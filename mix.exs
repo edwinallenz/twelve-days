@@ -22,9 +22,10 @@ defmodule TwelveDays.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :plug_cowboy],
+      mod: {TwelveDays.Application, []}
     ]
-  end
+    end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
@@ -35,7 +36,9 @@ defmodule TwelveDays.MixProject do
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:ex_doc, "~> 0.21.3", only: :dev, runtime: false},
       {:inch_ex, github: "rrrene/inch_ex", only: [:dev, :test]},
-      {:excoveralls, "~> 0.12.3", only: :test}
+      {:excoveralls, "~> 0.12.3", only: :test},
+      {:plug_cowboy, "~> 2.2"},
+      {:poison, "~> 4.0.1"}
     ]
   end
 
@@ -44,7 +47,7 @@ defmodule TwelveDays.MixProject do
       test_ci: [
         "test",
         "coveralls"
-      ],
+        ],
       code_review: [
         "dialyzer",
         "credo --strict"
@@ -52,7 +55,8 @@ defmodule TwelveDays.MixProject do
       generate_docs: [
         "docs",
         "inch"
-      ]
+      ],
+      test: "test --no-start"
     ]
   end
 end
